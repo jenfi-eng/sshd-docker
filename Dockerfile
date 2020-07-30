@@ -14,7 +14,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /
 
-# Annoying that we have to set a password to be let in - MAKE THIS STRONG.
+# We have to set a password to be let in for root - MAKE THIS STRONG.
 RUN echo 'root:THEPASSWORDYOUCREATED' | chpasswd
 
 EXPOSE 22
