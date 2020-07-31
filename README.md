@@ -2,7 +2,7 @@
 
 Adding sshd to docker is [considered](https://stackoverflow.com/a/52310862/399632) an [anti-pattern](https://jpetazzo.github.io/2014/06/23/docker-ssh-considered-evil/) except in the case of AWS Fargate as highlighted by a [long standing issue](https://github.com/aws/containers-roadmap/issues/187).
 
-This repo is am example of how to get docker running effectively for Alpine to use in Fargate.
+This repo is an example of how to get docker running effectively for Alpine to use in Fargate.
 
 ## To Run
 
@@ -15,7 +15,7 @@ This repo is am example of how to get docker running effectively for Alpine to u
 
 To be realistically accessible while still being secure, sshd should remain off until necessary.
 
-- Leave `SSH_ENABLED` environment variable false for all containers.
+- Leave `SSH_ENABLED` environment variable `false` for all containers.
 - Create an extra ECS Cluster as a One-Off Fargate task whose sole purpose is to be the SSH connector. Cloudformation CMD becomes:
   ``` YAML
   ...
@@ -38,8 +38,10 @@ To be realistically accessible while still being secure, sshd should remain off 
 
 - `SSH_ENABLED` flag turns on/off sshd. Default: `false`
 - SSH wipes the environment - the trick is to [re-hydrate the session](https://stackoverflow.com/questions/34630571/docker-env-variables-not-set-while-log-via-shell) via `env | grep '_\|PATH' | awk...` in the `entry-point.sh`
-- Key management is not the point of this repo, manage your keys well please.
+  - Change `_\|PATH` to capture the envs you need. Keep in mind you don't want all of them (some session ones do weird things to the terminal). Ideally all your envs have `_` in them.
+- Fargate does not let `HostPort` and `ContainerPort` be different. This means only one container can expose 22 at a time. Hard limitation.
 - Assumes you connect into your container to `root`.
+- Key management is not the point of this repo, manage your keys well please.
 - `sleep infinity` is [cool](https://stackoverflow.com/a/22100106/399632).
 
 ## Suggestions Welcome
